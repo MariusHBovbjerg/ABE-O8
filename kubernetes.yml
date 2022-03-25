@@ -1,0 +1,150 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbit
+  template:
+    metadata:
+      name: rabbit-pod
+      labels:
+        app: rabbit
+    spec:
+      containers:
+        - name: rabbit
+          image: rabbitmq:3.7.2-management
+          ports:
+            - containerPort: 15672
+            - containerPort: 5672
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: producer
+spec:
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      name: producer-pod
+      labels:
+        app: producer
+    spec:
+      containers:
+        - name: producer
+          image: producerservice
+          imagePullPolicy: Never
+          env:
+            - name: "RabbitMqHost"
+              value: "rabbit"
+            - name: "RabbitMqPassword"
+              value: "guest"
+            - name: "RabbitMqUsername"
+              value: "guest"
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: hotelbookingservice
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hotelbookingservice
+  template:
+    metadata:
+      name: hotelbookingservice-pod
+      labels:
+        app: hotelbookingservice
+    spec:
+      containers:
+        - name: hotelbookingservice
+          image: hotelbookingservice
+          imagePullPolicy: Never
+          env:
+            - name: "RabbitMqHost"
+              value: "rabbit"
+            - name: "RabbitMqPassword"
+              value: "guest"
+            - name: "RabbitMqUsername"
+              value: "guest"
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: carbookingservice
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: carbookingservice
+  template:
+    metadata:
+      name: carbookingservice-pod
+      labels:
+        app: carbookingservice
+    spec:
+      containers:
+        - name: carbookingservice
+          image: carbookingservice
+          imagePullPolicy: Never
+          env:
+            - name: "RabbitMqHost"
+              value: "rabbit"
+            - name: "RabbitMqPassword"
+              value: "guest"
+            - name: "RabbitMqUsername"
+              value: "guest"
+
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: flightbookingservice
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flightbookingservice
+  template:
+    metadata:
+      name: flightbookingservice-pod
+      labels:
+        app: flightbookingservice
+    spec:
+      containers:
+        - name: flightbookingservice
+          image: flightbookingservice
+          imagePullPolicy: Never
+          env:
+            - name: "RabbitMqHost"
+              value: "rabbit"
+            - name: "RabbitMqPassword"
+              value: "guest"
+            - name: "RabbitMqUsername"
+              value: "guest"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbit-master
+spec:
+  selector:
+    app: rabbit
+  ports:
+    - port: 15672
+      targetPort: 15672
+      name: rabbitmq
+    - port: 5672
+      targetPort: 5672
+      name: rabbit-managment
+---
