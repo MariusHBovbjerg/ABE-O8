@@ -11,8 +11,8 @@ namespace Consumer
 {
     public static class Receive
     {
-        private const string ExchangeName = "CommandExchange";
-        private const string RoutingKey = "HotelWestKey";
+        private const string ExchangeName = "CommandExchangeTopic";
+        private const string RoutingKey = "*.West";
         
         public static void Main()
         {
@@ -20,7 +20,7 @@ namespace Consumer
                 
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            channel.ExchangeDeclare(ExchangeName, "direct");
+            channel.ExchangeDeclare(ExchangeName, "topic");
             var QueueName = channel.QueueDeclare().QueueName;
             channel.QueueBind(QueueName, ExchangeName, RoutingKey);
 

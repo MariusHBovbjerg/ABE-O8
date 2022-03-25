@@ -7,6 +7,7 @@ namespace Producer
 {
     public class SagaHandler
     {
+        public static string baseKey = "Hotel.";
         public static BookingSaga CreateSaga(string hotelEast, string hotelArea)
         {
             var hotelEastCmd = new HotelBookingCmd(hotelEast, hotelArea.ToLower() == "east" ? Location.EAST : Location.WEST);
@@ -23,7 +24,7 @@ namespace Producer
             var hotelBookingCmd = saga.HotelBookingCmd;
             
             CommandLog(hotelBookingCmd.Type, hotelBookingCmd.Name);
-            var hotelResponse = await rpcClient.CallAsync(hotelBookingCmd, hotelBookingCmd.Location == Location.EAST ? "HotelEastKey" : "HotelWestKey");
+            var hotelResponse = await rpcClient.CallAsync(hotelBookingCmd, baseKey + (hotelBookingCmd.Location == Location.EAST ? "East" : "West"));
             ResponseLog(hotelResponse);
 
             if (hotelResponse == (hotelBookingCmd.Location == Location.EAST ? "HotelEastFailed" : "HotelWestFailed"))
@@ -31,7 +32,7 @@ namespace Producer
                 var hotelCancelCmd = saga.HotelBookingCancelCmd;
                 
                 CommandLog(hotelCancelCmd.Type, hotelCancelCmd.Name);
-                var hotelCancelResponse = await rpcClient.CallAsync(hotelCancelCmd, hotelCancelCmd.Location == Location.EAST ? "HotelEastKey" : "HotelWestKey");
+                var hotelCancelResponse = await rpcClient.CallAsync(hotelCancelCmd, baseKey + (hotelBookingCmd.Location == Location.EAST ? "East" : "West"));
                 ResponseLog(hotelCancelResponse);
 
                 Console.WriteLine("Failed and cancelled booking hotel :(");

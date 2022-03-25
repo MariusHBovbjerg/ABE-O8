@@ -7,7 +7,7 @@ namespace Producer
     {
         public static async Task Main(string[] args)
         {
-            var saga = SagaHandler.CreateSaga("hotel", "west");
+            var saga = SagaHandler.CreateSaga("hotel", "east");
             
             await SagaHandler.ExecuteSaga(saga);
 

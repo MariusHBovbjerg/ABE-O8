@@ -12,7 +12,7 @@ namespace Producer
 {
     public class RpcClient
     {
-        private const string ExchangeName = "CommandExchange";
+        private const string ExchangeName = "CommandExchangeTopic";
         private const string ReplyQueueName = "SagaReturnQueue";
 
         private readonly IConnection _connection;
@@ -27,7 +27,7 @@ namespace Producer
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
             // declare a server-named queue
-            _channel.ExchangeDeclare(ExchangeName, "direct");
+            _channel.ExchangeDeclare(ExchangeName, "topic");
             _replyQueueName = _channel.QueueDeclare(queue: ReplyQueueName);
             var consumer = new EventingBasicConsumer(_channel);
             consumer.Received += (model, ea) =>
